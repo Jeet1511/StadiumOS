@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Role } from '../types';
 
-const API_KEY = 'AIzaSyAb8RN6JQoCqZ_Jt1NcmR7RjVQHKKSXzyzJzPuKM-WbeuRtOjWQ';
+const API_KEY = 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Use gemini-2.0-flash — fast, free-tier friendly
