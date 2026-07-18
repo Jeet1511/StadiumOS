@@ -2,13 +2,34 @@ import { defineConfig, type HtmlTagDescriptor, type Plugin } from "vite"
 import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
+import fs from "node:fs"
 
-import siteConfiguration from "./.figma/make/site.json"
+// Load Figma site config only if it exists (not present on Vercel/production builds)
+let siteConfiguration: any = {}
+const figmaConfigPath = path.resolve(__dirname, "./.figma/make/site.json")
+if (fs.existsSync(figmaConfigPath)) {
+  siteConfiguration = JSON.parse(fs.readFileSync(figmaConfigPath, "utf-8"))
+}
+
+const isFigmaMake = fs.existsSync(figmaConfigPath)
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === "development"
+
+  const plugins: Plugin[] = [
+    react(),
+    tailwindcss(),
+    figmaSiteConfiguration(siteConfiguration),
+    figmaErrorOverlayReplay(),
+    figmaReactRefreshBoundaryFallback(),
+  ]
+
+  // Only add the kit plugin in Figma Make environment
+  if (isFigmaMake) {
+    plugins.push(figmaMakeKitPlugin({ storiesGlob: "/src/**/*.stories.{ts,tsx,js,jsx}" }))
+  }
 
   return {
     base: process.env.FIGMA_PUBLIC_URL
@@ -18,14 +39,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: emitSourcemaps ? "inline" : false,
       minify: !emitSourcemaps,
     },
-    plugins: [
-      react(),
-      tailwindcss(),
-      figmaSiteConfiguration(siteConfiguration),
-      figmaErrorOverlayReplay(),
-      figmaReactRefreshBoundaryFallback(),
-      figmaMakeKitPlugin({ storiesGlob: "/src/**/*.stories.{ts,tsx,js,jsx}" }),
-    ],
+    plugins,
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
