@@ -62,41 +62,20 @@ export function getRoleConfig(role: string): RoleConfig {
   return ROLES.find(r => r.id === role) ?? ROLES[0];
 }
 
-// ── Navigation per Role ────────────────────────────────
+// ── Navigation (All features enabled for Hackathon Demo) ──
 export function getNavItems(role: string): NavItem[] {
-  const base: NavItem[] = [{ id: 'home', icon: Home, label: 'Home' }];
-
-  switch (role) {
-    case 'security':
-      return [...base,
-        { id: 'ai', icon: ShieldAlert, label: 'Threat Intel', highlight: true },
-        { id: 'crowd', icon: Users, label: 'Crowd Matrix' },
-        { id: 'cctv', icon: Eye, label: 'CCTV Feeds' },
-        { id: 'evac', icon: AlertTriangle, label: 'Evacuation' },
-      ];
-    case 'organizer':
-      return [...base,
-        { id: 'ai', icon: Activity, label: 'Command AI', highlight: true },
-        { id: 'overview', icon: Map, label: 'Venue Overview' },
-        { id: 'staff', icon: Users, label: 'Staff Deploy' },
-        { id: 'sustain', icon: Globe, label: 'Sustainability' },
-      ];
-    case 'volunteer':
-      return [...base,
-        { id: 'ai', icon: Sparkle, label: 'Task AI', highlight: true },
-        { id: 'tasks', icon: AlertTriangle, label: 'My Tasks' },
-        { id: 'translate', icon: Globe, label: 'Translation' },
-        { id: 'nav', icon: Navigation, label: 'Wayfinding' },
-      ];
-    default: // fan
-      return [...base,
-        { id: 'ai', icon: Sparkles, label: 'FanPilot AI', highlight: true },
-        { id: 'ticket', icon: Ticket, label: 'My Ticket' },
-        { id: 'nav', icon: Navigation, label: 'Wayfinding' },
-        { id: 'access', icon: Accessibility, label: 'Accessibility' },
-        { id: 'transport', icon: Train, label: 'Transit Hub' },
-      ];
-  }
+  return [
+    { id: 'home', icon: Home, label: 'Home' },
+    { id: 'ai', icon: Sparkles, label: 'FanPilot AI', highlight: true },
+    { id: 'ticket', icon: Ticket, label: 'My Ticket' },
+    { id: 'nav', icon: Navigation, label: 'Wayfinding' },
+    { id: 'access', icon: Accessibility, label: 'Accessibility' },
+    { id: 'transport', icon: Train, label: 'Transit Hub' },
+    { id: 'evac', icon: AlertTriangle, label: 'Security & Evac' },
+    { id: 'sustain', icon: Globe, label: 'Sustainability' },
+    { id: 'crowd', icon: Users, label: 'Crowd Matrix' },
+    { id: 'tasks', icon: Activity, label: 'Volunteer Tasks' },
+  ];
 }
 
 // ── Map Layer Definitions ──────────────────────────────

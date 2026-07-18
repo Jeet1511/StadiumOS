@@ -58,7 +58,7 @@ export default function App() {
       panel={getActivePanel(state.role, state.activeNav)}
     >
       {/* Stadium map + match ticker + layer toggles */}
-      <StadiumMap activeLayers={state.activeLayers} />
+      <StadiumMap activeLayers={state.activeLayers} activeNav={state.activeNav} />
       <MatchTicker />
 
       {/* Layer toggle bar */}

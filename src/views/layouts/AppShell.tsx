@@ -13,9 +13,9 @@ interface AppShellProps {
 
 export default function AppShell({ sidebar, header, children, panel, mode }: AppShellProps) {
   return (
-    <div className="flex h-screen w-screen text-slate-200 font-sans overflow-hidden selection:bg-cyan-500/20 relative" style={{ background: 'linear-gradient(145deg, #080e1e 0%, #0c1a30 40%, #0a1428 100%)' }}>
+    <div className="flex h-screen w-screen text-slate-200 font-sans overflow-hidden selection:bg-cyan-500/20 relative pt-[48px]" style={{ background: 'linear-gradient(145deg, #080e1e 0%, #0c1a30 40%, #0a1428 100%)' }}>
       {/* Ambient background */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-0 z-0 pointer-events-none mt-[48px]">
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 25% 25%, rgba(6,182,212,0.06) 0%, transparent 50%), radial-gradient(ellipse at 75% 75%, rgba(139,92,246,0.05) 0%, transparent 50%)' }} />
         <div className={cn(
           "absolute top-[10%] left-[15%] w-[45vw] h-[45vw] rounded-full blur-[180px] animate-float transition-colors duration-2000",

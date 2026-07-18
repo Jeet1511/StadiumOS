@@ -69,7 +69,7 @@ function genDots(sec: typeof SECTIONS[0], count: number, r1: number, r2: number)
 
 interface SectionInfo { num: number; x: number; y: number; data: typeof CROWD[number] }
 
-const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLayers: Set<Layer> }) {
+const StadiumMap = React.memo(function StadiumMap({ activeLayers, activeNav }: { activeLayers: Set<Layer>, activeNav: string }) {
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -115,7 +115,7 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
     return all;
   }, []);
 
-  const showRoute = activeLayers.has('navigation') || activeLayers.has('ai');
+  const showRoute = activeLayers.has('navigation') || activeLayers.has('ai') || activeNav === 'nav' || activeNav === 'access' || activeNav === 'evac';
 
   return (
     <div className="absolute inset-0 flex items-center justify-center overflow-hidden" onClick={() => setSelectedSection(null)}>
@@ -145,10 +145,10 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
         </div>
       )}
 
-      <div className="w-full h-full max-w-[min(75vh,85vw)] max-h-[min(75vh,85vw)] relative flex items-center justify-center p-4"
+      <div className="w-full h-full max-w-[min(65vh,80vw)] max-h-[min(65vh,80vw)] relative flex items-center justify-center p-4 lg:p-8 mt-6"
         onWheel={handleWheel} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
-        <svg viewBox="0 0 1000 1000" className="w-full h-full" preserveAspectRatio="xMidYMid meet"
+        <svg viewBox="-50 -50 1100 1100" className="w-full h-full overflow-visible" preserveAspectRatio="xMidYMid meet"
           style={{ transform: `translate(${translate.x}px,${translate.y}px) scale(${scale})`, transition: isDragging ? 'none' : 'transform 0.3s ease-out' }}>
           <defs>
             <filter id="routeGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
@@ -156,10 +156,11 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
           </defs>
 
           {/* Outer wall */}
-          <circle cx={CX} cy={CY} r={WR} fill="#1e3a66" stroke="#60a5fa" strokeWidth="2" strokeOpacity="0.4" />
+          <circle cx={CX} cy={CY} r={WR} fill="#1e3a8a" stroke="#38bdf8" strokeWidth="4" strokeOpacity="0.9" />
+          
           {/* Concourse */}
-          <path d={sectorPath(CR1, CR2, 0, 360)} fill="#2b4c80" stroke="#60a5fa" strokeWidth="1" strokeOpacity="0.5" />
-          <path d={arcStroke(CONCOURSE_MID, 0, 360)} fill="none" stroke="#1e3352" strokeWidth="0.3" strokeDasharray="2 6" strokeOpacity="0.2" />
+          <path d={sectorPath(CR1, CR2, 0, 360)} fill="#1e40af" stroke="#7dd3fc" strokeWidth="2" strokeOpacity="0.8" />
+          <path d={arcStroke(CONCOURSE_MID, 0, 360)} fill="none" stroke="#bae6fd" strokeWidth="1" strokeDasharray="2 6" strokeOpacity="0.6" />
 
           {/* Gates */}
           {GATES.map(g => {
@@ -168,46 +169,52 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
             const [i1x,i1y]=p2c(CR1,g.a-hw),[i2x,i2y]=p2c(CR1,g.a+hw);
             const [lx,ly]=p2c(WR+14,g.a);
             return <g key={g.l}>
-              <path d={`M${i1x},${i1y}L${o1x},${o1y}L${o2x},${o2y}L${i2x},${i2y}Z`} fill="#3b6ba5" stroke={g.c} strokeWidth="2" strokeOpacity="0.8" />
-              <circle cx={lx} cy={ly} r="10" fill={g.c} fillOpacity="0.2" stroke={g.c} strokeWidth="1.5" strokeOpacity="0.8" />
-              <text x={lx} y={ly+3.5} fill="#ffffff" fontSize="9" fontWeight="800" textAnchor="middle" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>G{g.l}</text>
+              <path d={`M${i1x},${i1y}L${o1x},${o1y}L${o2x},${o2y}L${i2x},${i2y}Z`} fill="#3b82f6" stroke={g.c} strokeWidth="2" strokeOpacity="1" />
+              <circle cx={lx} cy={ly} r="10" fill={g.c} fillOpacity="0.4" stroke={g.c} strokeWidth="2" strokeOpacity="1" />
+              <text x={lx} y={ly+3.5} fill="#ffffff" fontSize="9" fontWeight="800" textAnchor="middle" style={{ textShadow: '0 2px 5px rgba(0,0,0,0.9)' }}>G{g.l}</text>
             </g>;
           })}
 
           {/* Upper tier */}
           {SECTIONS.map(s => {
             const hi = s.num===112; const cd = CROWD[s.num]; const sel = selectedSection?.num === s.num+100;
+            const baseFill = "#2563eb"; // Vibrant blue
+            const bgFill = activeLayers.has('crowd') && cd ? cd.fill.replace('0.06', '0.7').replace('0.04', '0.6').replace('0.03', '0.5') : baseFill;
+            
             return <g key={`u${s.num}`} className="cursor-pointer" onClick={e => { e.stopPropagation(); handleSectionClick(s, 'upper'); }}>
-              <path d={sectorPath(UR1,UR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.3)':hi?'#3b6ba5':cd?.fill||'#1e3a66'} stroke={sel?'#67e8f9':hi?'#67e8f9':'#60a5fa'} strokeWidth={sel?2.5:hi?2:1} strokeOpacity={sel?1:hi?0.8:0.4} className="hover:brightness-125 transition-all duration-200" />
-              {ROWS_U.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#93c5fd" strokeWidth="0.3" strokeOpacity="0.15" />)}
-              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((UR1+UR2)/2,m);return <text x={x} y={y+3} fill="#ffffff" fontSize="9" fontWeight="800" textAnchor="middle" opacity={sel?1:hi?1:0.7} className="pointer-events-none" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>{s.num+100}</text>;})()}
+              <path d={sectorPath(UR1,UR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.9)':hi?'#06b6d4':bgFill} fillOpacity="0.9" stroke={sel?'#cffafe':hi?'#67e8f9':'#7dd3fc'} strokeWidth={sel?3:hi?2:1.5} strokeOpacity={sel?1:hi?1:0.7} className="hover:brightness-125 transition-all duration-300" />
+              {ROWS_U.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#bae6fd" strokeWidth="0.5" strokeOpacity="0.4" />)}
+              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((UR1+UR2)/2,m);return <text x={x} y={y+3} fill="#ffffff" fontSize="10" fontWeight="900" textAnchor="middle" opacity={sel?1:hi?1:0.9} style={{ textShadow: '0 2px 5px rgba(0,0,0,0.9)' }} className="pointer-events-none">{s.num+100}</text>;})()}
             </g>;
           })}
 
           {/* Lower tier */}
           {SECTIONS.map(s => {
             const hi = s.num===112; const cd = CROWD[s.num]; const sel = selectedSection?.num === s.num;
+            const baseFill = "#1d4ed8"; // Slightly darker vibrant blue
+            const bgFill = activeLayers.has('crowd') && cd ? cd.fill.replace('0.06', '0.8').replace('0.04', '0.7').replace('0.03', '0.6') : baseFill;
+
             return <g key={`l${s.num}`} className="cursor-pointer" onClick={e => { e.stopPropagation(); handleSectionClick(s, 'lower'); }}>
-              <path d={sectorPath(LR1,LR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.3)':hi?'#3b6ba5':cd?.fill||'#2b4c80'} stroke={sel?'#67e8f9':hi?'#67e8f9':'#60a5fa'} strokeWidth={sel?2.5:hi?2:1} strokeOpacity={sel?1:hi?0.8:0.4} className="hover:brightness-125 transition-all duration-200" />
-              {ROWS_L.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#93c5fd" strokeWidth="0.3" strokeOpacity="0.15" />)}
-              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((LR1+LR2)/2,m);return <text x={x} y={y+3.5} fill="#ffffff" fontSize={hi?11:10} fontWeight="800" textAnchor="middle" opacity={sel?1:hi?1:0.75} className="pointer-events-none" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>{s.num}</text>;})()}
-              {hi && <path d={sectorPath(LR1-2,LR2+2,s.a1-0.5,s.a2+0.5)} fill="none" stroke="#22d3ee" strokeWidth="1" strokeOpacity="0.5" className="animate-[pulse_3s_ease-in-out_infinite] pointer-events-none" />}
+              <path d={sectorPath(LR1,LR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.9)':hi?'#0891b2':bgFill} fillOpacity="0.9" stroke={sel?'#cffafe':hi?'#67e8f9':'#7dd3fc'} strokeWidth={sel?3.5:hi?2.5:2} strokeOpacity={sel?1:hi?1:0.8} className="hover:brightness-125 transition-all duration-300" />
+              {ROWS_L.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#bae6fd" strokeWidth="0.6" strokeOpacity="0.5" />)}
+              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((LR1+LR2)/2,m);return <text x={x} y={y+3.5} fill="#ffffff" fontSize={hi?12:11} fontWeight="900" textAnchor="middle" opacity={sel?1:hi?1:0.9} style={{ textShadow: '0 2px 5px rgba(0,0,0,0.9)' }} className="pointer-events-none">{s.num}</text>;})()}
+              {hi && <path d={sectorPath(LR1-2,LR2+2,s.a1-0.5,s.a2+0.5)} fill="none" stroke="#22d3ee" strokeWidth="2" strokeOpacity="0.9" className="animate-[pulse_2s_ease-in-out_infinite] pointer-events-none" />}
             </g>;
           })}
 
           {/* Crowd dots */}
           {activeLayers.has('crowd') && crowdDots.map((d,i) => (
-            <circle key={i} cx={d.x} cy={d.y} r="1.5" fill={d.color} opacity={d.o} className="pointer-events-none" />
+            <circle key={i} cx={d.x} cy={d.y} r="2" fill={d.color} opacity={d.o * 2.5} className="pointer-events-none" style={{ filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.9))' }} />
           ))}
 
-          <circle cx={CX} cy={CY} r={LR1-5} fill="none" stroke="#1a2a42" strokeWidth="0.4" strokeOpacity="0.1" />
+          <circle cx={CX} cy={CY} r={LR1-5} fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeOpacity="0.6" />
 
           {/* Pitch */}
-          <rect x="370" y="410" width="260" height="180" rx="5" fill="#0d2e18" stroke="#34d399" strokeOpacity="0.3" strokeWidth="1.5" />
-          <rect x="377" y="417" width="246" height="166" fill="#134222" rx="3" />
-          <g stroke="#34d399" strokeWidth="1" fill="none" opacity="0.6">
+          <rect x="370" y="410" width="260" height="180" rx="8" fill="#064e3b" stroke="#34d399" strokeOpacity="0.9" strokeWidth="3" />
+          <rect x="377" y="417" width="246" height="166" fill="#10b981" rx="4" />
+          <g stroke="#ffffff" strokeWidth="2" fill="none" opacity="0.9">
             <rect x="384" y="424" width="232" height="152" /><line x1="500" y1="424" x2="500" y2="576" />
-            <circle cx="500" cy="500" r="20" /><circle cx="500" cy="500" r="1.5" fill="#10b981" />
+            <circle cx="500" cy="500" r="20" /><circle cx="500" cy="500" r="3" fill="#ffffff" />
             <rect x="384" y="460" width="36" height="80" /><rect x="580" y="460" width="36" height="80" />
             <rect x="384" y="477" width="13" height="46" /><rect x="603" y="477" width="13" height="46" />
           </g>
