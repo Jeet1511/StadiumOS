@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { Role } from '../types';
+import type { Role } from '../models/types';
 
 // Use exact key from user — gemini-2.0-flash for free-tier
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
