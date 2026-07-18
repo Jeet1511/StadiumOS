@@ -41,7 +41,7 @@ export default function AIChat({ role }: { role: Role }) {
 
   return (
     <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative shadow-[-4px_0_24px_rgba(0,0,0,0.2)]"
-      style={{ background: 'rgba(18,34,64,0.55)', backdropFilter: 'blur(40px)' }}>
+      role="region" aria-label="AI Assistant Chat" style={{ background: 'rgba(18,34,64,0.55)', backdropFilter: 'blur(40px)' }}>
       {/* Left border */}
       <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-white/[0.03] via-white/[0.06] to-white/[0.03]" />
 
@@ -58,7 +58,7 @@ export default function AIChat({ role }: { role: Role }) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3">
+      <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3" role="log" aria-label="Chat messages" aria-live="polite">
         {allMessages.map((m, i) => (
           <div key={m.id || i} className={cn("flex gap-2.5", m.role === 'user' && "flex-row-reverse")}>
             <div className={cn(
@@ -111,9 +111,12 @@ export default function AIChat({ role }: { role: Role }) {
           <input type="text" value={input} onChange={e => setInput(e.target.value)}
             placeholder={role === 'security' ? 'Ask about threats, protocols...' : 'Ask about the venue, directions...'}
             disabled={isLoading}
+            aria-label="Type your message to the AI assistant"
+            autoComplete="off"
             className="w-full bg-white/[0.025] border border-white/[0.06] rounded-xl pl-4 pr-10 py-3 text-[13px] text-white placeholder:text-white/60 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all disabled:opacity-50" />
           <button type="submit" disabled={!input.trim() || isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 disabled:opacity-30 transition-all">
+            aria-label="Send message"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 disabled:opacity-30 transition-all focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a1428]">
             <Send className="w-4 h-4" />
           </button>
         </form>

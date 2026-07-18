@@ -113,3 +113,20 @@ body { margin: 0; overflow: hidden; }
 .accent-bar-emerald { border-top: 2px solid transparent; border-image: linear-gradient(90deg, #059669, #10b981, #34d399) 1; }
 .accent-bar-violet { border-top: 2px solid transparent; border-image: linear-gradient(90deg, #7c3aed, #8b5cf6, #a78bfa) 1; }
 .accent-bar-gold { border-top: 2px solid transparent; border-image: linear-gradient(90deg, #d97706, #f59e0b, #fbbf24) 1; }
+
+/* ── Focus Indicators (WCAG 2.1 AA) ─── */
+*:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.7);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible, a:focus-visible, input:focus-visible {
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.3);
+}
+
+/* ── Screen Reader Only ────────────── */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+}

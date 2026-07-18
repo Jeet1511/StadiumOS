@@ -1,4 +1,14 @@
-/* Controller: Central App State */
+/**
+ * @module useAppState
+ * @description Central application state controller (MVC pattern).
+ * Manages role-based views, navigation, map layers, and emergency modes.
+ *
+ * Hackathon Alignment:
+ * - Navigation & wayfinding state management
+ * - Crowd management layer toggling
+ * - Emergency evacuation mode switching
+ * - Multi-role support (fan, security, organizer, volunteer)
+ */
 import { useState, useCallback, useEffect } from 'react';
 import type { Role, AppView, GlobalMode, Layer } from '../models/types';
 
