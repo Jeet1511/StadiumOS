@@ -1,3 +1,13 @@
+/**
+ * @module styles/index.css
+ * @description Global design system for StadiumOS.
+ * Implements glass morphism, animations, gradient effects, WCAG 2.1 AA accessibility,
+ * performance optimizations, and responsive design tokens.
+ *
+ * Accessibility: Focus indicators, reduced motion support, high contrast mode.
+ * Performance: CSS containment, will-change hints, content-visibility.
+ */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
@@ -24,6 +34,7 @@
   min-height: 100vh;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
 }
 body { margin: 0; overflow: hidden; }
 ::selection { background: rgba(34, 211, 238, 0.3); color: #fff; }
@@ -60,6 +71,7 @@ body { margin: 0; overflow: hidden; }
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(34, 211, 238, 0.08);
+  contain: layout style;
 }
 .glass-elevated {
   background: rgba(18, 34, 64, 0.8);
@@ -67,6 +79,7 @@ body { margin: 0; overflow: hidden; }
   -webkit-backdrop-filter: blur(40px);
   border: 1px solid rgba(34, 211, 238, 0.12);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.2);
+  contain: layout style;
 }
 .glass-float {
   background: rgba(18, 34, 64, 0.88);
@@ -74,6 +87,7 @@ body { margin: 0; overflow: hidden; }
   -webkit-backdrop-filter: blur(60px);
   border: 1px solid rgba(34, 211, 238, 0.15);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 48px rgba(0,0,0,0.3);
+  contain: layout style;
 }
 
 /* ── Gradient Text ──────────────── */
@@ -129,4 +143,82 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   position: absolute; width: 1px; height: 1px;
   padding: 0; margin: -1px; overflow: hidden;
   clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+}
+
+/* ── Performance: CSS Containment ──── */
+/* Isolate rendering for heavy components to prevent layout thrashing */
+[role="main"] {
+  contain: layout style;
+  will-change: contents;
+}
+[role="navigation"] {
+  contain: layout style paint;
+}
+[role="complementary"] {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: 380px 100vh;
+}
+
+/* GPU-accelerated transforms for interactive elements */
+svg {
+  will-change: transform;
+  contain: layout style;
+}
+
+/* ── Accessibility: Reduced Motion ─── */
+/* Respects user's motion preference for vestibular disorder accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-float,
+  .animate-glow,
+  .animate-dash,
+  .animate-beacon,
+  .animate-scanline,
+  .animate-gradient-x {
+    animation: none !important;
+  }
+  .text-shimmer {
+    animation: none !important;
+    background: linear-gradient(135deg, #22d3ee, #a78bfa);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+}
+
+/* ── Accessibility: High Contrast ──── */
+/* Enhanced visibility for users with low vision */
+@media (prefers-contrast: more) {
+  .glass-surface,
+  .glass-elevated,
+  .glass-float {
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  *:focus-visible {
+    outline-width: 3px;
+    outline-color: #22d3ee;
+  }
+  .text-white\/25,
+  .text-white\/30,
+  .text-white\/35 {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+}
+
+/* ── No-scrollbar utility ──────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Print styles ──────────────────── */
+@media print {
+  body { background: white; color: black; overflow: visible; }
+  .glass-surface, .glass-elevated, .glass-float {
+    background: white; border: 1px solid #ccc;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
 }
