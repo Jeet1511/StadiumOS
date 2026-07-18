@@ -12,7 +12,7 @@ const objectives = [
 
 export default function SecurityPanel() {
   return (
-    <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative" style={{ background: 'rgba(4,8,15,0.9)', backdropFilter: 'blur(40px)' }}>
+    <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative shadow-[-4px_0_24px_rgba(0,0,0,0.2)]" style={{ background: 'rgba(18,34,64,0.55)', backdropFilter: 'blur(40px)' }}>
       <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-rose-500/[0.05] via-rose-500/[0.1] to-rose-500/[0.05]" />
       <div className="p-4 flex items-center justify-between shrink-0 relative">
         <div className="absolute bottom-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-rose-500/10 to-transparent" />

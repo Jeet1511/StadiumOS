@@ -15,8 +15,8 @@ export default function Header({ mode, onOpenSearch }: HeaderProps) {
       initial={{ y: -16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="h-[52px] w-full flex items-center justify-between px-4 z-30 relative shrink-0"
-      style={{ background: 'rgba(4,8,15,0.85)', backdropFilter: 'blur(40px)' }}
+      className="h-[52px] w-full flex items-center justify-between px-4 z-30 relative shrink-0 shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
+      style={{ background: 'rgba(18,34,64,0.4)', backdropFilter: 'blur(40px)' }}
     >
       {/* Bottom border */}
       <div className={cn(

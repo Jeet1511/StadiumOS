@@ -13,18 +13,18 @@ interface AppShellProps {
 
 export default function AppShell({ sidebar, header, children, panel, mode }: AppShellProps) {
   return (
-    <div className="flex h-screen w-screen text-slate-200 font-sans overflow-hidden selection:bg-cyan-500/20 relative" style={{ background: '#04080f' }}>
+    <div className="flex h-screen w-screen text-slate-200 font-sans overflow-hidden selection:bg-cyan-500/20 relative" style={{ background: 'linear-gradient(145deg, #080e1e 0%, #0c1a30 40%, #0a1428 100%)' }}>
       {/* Ambient background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 25% 25%, rgba(6,182,212,0.025) 0%, transparent 55%), radial-gradient(ellipse at 75% 75%, rgba(139,92,246,0.018) 0%, transparent 55%)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 25% 25%, rgba(6,182,212,0.06) 0%, transparent 50%), radial-gradient(ellipse at 75% 75%, rgba(139,92,246,0.05) 0%, transparent 50%)' }} />
         <div className={cn(
-          "absolute top-[-8%] left-[12%] w-[38%] h-[38%] rounded-full blur-[200px] animate-float transition-colors duration-2000",
-          mode === 'emergency' ? 'bg-rose-500/[0.05]' : 'bg-cyan-500/[0.02]'
+          "absolute top-[10%] left-[15%] w-[45vw] h-[45vw] rounded-full blur-[180px] animate-float transition-colors duration-2000",
+          mode === 'emergency' ? 'bg-rose-500/[0.08]' : 'bg-cyan-500/[0.06]'
         )} />
-        <div className="absolute bottom-[-8%] right-[12%] w-[32%] h-[32%] rounded-full bg-violet-500/[0.015] blur-[180px] animate-float" style={{ animationDelay: '3s' }} />
-        <div className="absolute top-[45%] left-[55%] w-[22%] h-[22%] rounded-full bg-emerald-500/[0.01] blur-[150px] animate-float" style={{ animationDelay: '7s' }} />
+        <div className="absolute bottom-[10%] right-[10%] w-[40vw] h-[40vw] rounded-full bg-violet-500/[0.05] blur-[200px] animate-float" style={{ animationDelay: '3s' }} />
+        <div className="absolute top-[40%] left-[60%] w-[35vw] h-[35vw] rounded-full bg-emerald-500/[0.04] blur-[150px] animate-float" style={{ animationDelay: '5s' }} />
         {/* Subtle dot grid */}
-        <div className="absolute inset-0 opacity-[0.006]" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '44px 44px' }} />
+        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
         {/* Emergency scanline */}
         {mode === 'emergency' && (
           <div className="absolute inset-0 overflow-hidden">

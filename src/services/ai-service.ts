@@ -2,9 +2,17 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Role } from '../models/types';
 
 // Use exact key from user — gemini-2.0-flash for free-tier
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+let model: any = null;
+
+function getModel() {
+  if (!model) {
+    if (!API_KEY) throw new Error('API_KEY_MISSING');
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  }
+  return model;
+}
 
 function buildSystemPrompt(role: Role): string {
   const base = `You are StadiumOS AI for FIFA World Cup 2026 at Estadio Azteca, Mexico City.
@@ -37,7 +45,7 @@ let currentRole: Role | null = null;
 export async function sendMessage(message: string, role: Role): Promise<string> {
   try {
     if (role !== currentRole) {
-      chatSession = model.startChat({
+      chatSession = getModel().startChat({
         history: [],
         generationConfig: { maxOutputTokens: 200, temperature: 0.7 },
       });
@@ -50,7 +58,8 @@ export async function sendMessage(message: string, role: Role): Promise<string> 
   } catch (error: unknown) {
     console.error('Gemini error:', error);
     const msg = error instanceof Error ? error.message : '';
-    if (msg.includes('API_KEY')) return 'Invalid API key. Please check your Gemini API key in services/ai-service.ts';
+    if (msg.includes('API_KEY_MISSING')) return 'Please add your Gemini API Key to the .env file to enable AI features.';
+    if (msg.includes('API_KEY') || msg.includes('API key')) return 'Invalid API key. Please check your Gemini API key in .env';
     if (msg.includes('429') || msg.includes('quota')) return 'Rate limited — please wait a moment and try again.';
     return `AI error: ${msg.slice(0, 120)}`;
   }
@@ -59,7 +68,7 @@ export async function sendMessage(message: string, role: Role): Promise<string> 
 export async function* streamMessage(message: string, role: Role): AsyncGenerator<string> {
   try {
     if (role !== currentRole) {
-      chatSession = model.startChat({
+      chatSession = getModel().startChat({
         history: [],
         generationConfig: { maxOutputTokens: 200, temperature: 0.7 },
       });
@@ -75,6 +84,7 @@ export async function* streamMessage(message: string, role: Role): AsyncGenerato
   } catch (error: unknown) {
     console.error('Gemini stream error:', error);
     const msg = error instanceof Error ? error.message : 'Unknown error';
+    if (msg.includes('API_KEY_MISSING')) { yield 'Please add your Gemini API Key to the .env file to enable AI features.'; return; }
     yield `AI error: ${msg.slice(0, 120)}`;
   }
 }

@@ -21,8 +21,8 @@ export default function Sidebar({ role, activeNav, onNavigate, onProfileClick }:
       initial={{ x: -24, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="w-[68px] lg:w-[220px] h-full flex flex-col z-40 relative"
-      style={{ background: 'rgba(4,8,15,0.92)', backdropFilter: 'blur(40px)' }}
+      className="w-[68px] lg:w-[220px] h-full flex flex-col z-40 relative shadow-[4px_0_24px_rgba(0,0,0,0.2)]"
+      style={{ background: 'rgba(18,34,64,0.5)', backdropFilter: 'blur(40px)' }}
       role="navigation"
     >
       {/* Right edge line */}
@@ -55,7 +55,7 @@ export default function Sidebar({ role, activeNav, onNavigate, onProfileClick }:
               aria-current={active ? 'page' : undefined}
               className={cn(
                 "flex items-center p-2 lg:p-2.5 rounded-xl transition-all duration-200 relative group",
-                active ? "bg-white/[0.06] text-white" : "text-white/30 hover:bg-white/[0.03] hover:text-white/55"
+                active ? "bg-white/[0.06] text-white" : "text-white/70 hover:bg-white/[0.03] hover:text-white/80"
               )}
             >
               {active && (
@@ -79,13 +79,13 @@ export default function Sidebar({ role, activeNav, onNavigate, onProfileClick }:
       {/* Profile */}
       <div className="px-2 pb-3 relative shrink-0">
         <div className="absolute top-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-        <button onClick={onProfileClick} id="nav-profile" className="flex items-center w-full p-2 lg:p-2.5 rounded-xl hover:bg-white/[0.04] transition-all group mt-2">
-          <div className="w-7 h-7 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mx-auto lg:mx-0">
-            <User className="w-3.5 h-3.5 text-white/35 group-hover:text-white/60 transition-colors" />
+        <button onClick={onProfileClick} className="flex items-center w-full px-4 py-4 hover:bg-white/[0.05] transition-colors outline-none cursor-pointer group">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(34,211,238,0.4)] group-hover:shadow-[0_0_16px_rgba(34,211,238,0.6)] transition-all">
+            <User className="w-4 h-4 text-white" />
           </div>
-          <div className="ml-2.5 hidden lg:flex flex-col text-left">
-            <span className="text-[11px] font-medium text-white/60 group-hover:text-white/80 transition-colors">Alex Ridge</span>
-            <span className="text-[8px] text-white/20 tracking-[0.15em] uppercase font-semibold mt-0.5">
+          <div className="ml-3 hidden lg:flex flex-col items-start min-w-0">
+            <span className="text-[13px] font-bold text-white truncate w-full leading-tight">Alex Ridge</span>
+            <span className="text-[10px] text-white/80 font-semibold tracking-wider mt-0.5 uppercase">
               {role === 'fan' ? 'Section 112' : role === 'security' ? 'Clearance 4' : role === 'organizer' ? 'Manager' : 'Volunteer'}
             </span>
           </div>

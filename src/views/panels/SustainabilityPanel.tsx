@@ -11,7 +11,7 @@ export default function SustainabilityPanel() {
   const colors = [{ bar: 'bg-amber-500', t: 'text-amber-400' }, { bar: 'bg-blue-500', t: 'text-blue-400' }, { bar: 'bg-emerald-500', t: 'text-emerald-400' }, { bar: 'bg-violet-500', t: 'text-violet-400' }];
 
   return (
-    <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative" style={{ background: 'rgba(4,8,15,0.9)', backdropFilter: 'blur(40px)' }}>
+    <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative shadow-[-4px_0_24px_rgba(0,0,0,0.2)]" style={{ background: 'rgba(18,34,64,0.55)', backdropFilter: 'blur(40px)' }}>
       <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-white/[0.03] via-white/[0.06] to-white/[0.03]" />
       <div className="p-4 flex items-center justify-between shrink-0 relative">
         <div className="absolute bottom-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />

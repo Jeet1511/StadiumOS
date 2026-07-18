@@ -156,9 +156,9 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
           </defs>
 
           {/* Outer wall */}
-          <circle cx={CX} cy={CY} r={WR} fill="#060e1c" stroke="#1a2a42" strokeWidth="1.2" />
+          <circle cx={CX} cy={CY} r={WR} fill="#1e3a66" stroke="#60a5fa" strokeWidth="2" strokeOpacity="0.4" />
           {/* Concourse */}
-          <path d={sectorPath(CR1, CR2, 0, 360)} fill="#0c1a2e" stroke="#1a2a42" strokeWidth="0.4" />
+          <path d={sectorPath(CR1, CR2, 0, 360)} fill="#2b4c80" stroke="#60a5fa" strokeWidth="1" strokeOpacity="0.5" />
           <path d={arcStroke(CONCOURSE_MID, 0, 360)} fill="none" stroke="#1e3352" strokeWidth="0.3" strokeDasharray="2 6" strokeOpacity="0.2" />
 
           {/* Gates */}
@@ -168,9 +168,9 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
             const [i1x,i1y]=p2c(CR1,g.a-hw),[i2x,i2y]=p2c(CR1,g.a+hw);
             const [lx,ly]=p2c(WR+14,g.a);
             return <g key={g.l}>
-              <path d={`M${i1x},${i1y}L${o1x},${o1y}L${o2x},${o2y}L${i2x},${i2y}Z`} fill="#0e1a2f" stroke={g.c} strokeWidth="0.5" strokeOpacity="0.2" />
-              <circle cx={lx} cy={ly} r="8" fill={g.c} fillOpacity="0.05" stroke={g.c} strokeWidth="0.7" strokeOpacity="0.35" />
-              <text x={lx} y={ly+3} fill={g.c} fontSize="7" fontWeight="700" textAnchor="middle" opacity="0.8">G{g.l}</text>
+              <path d={`M${i1x},${i1y}L${o1x},${o1y}L${o2x},${o2y}L${i2x},${i2y}Z`} fill="#3b6ba5" stroke={g.c} strokeWidth="2" strokeOpacity="0.8" />
+              <circle cx={lx} cy={ly} r="10" fill={g.c} fillOpacity="0.2" stroke={g.c} strokeWidth="1.5" strokeOpacity="0.8" />
+              <text x={lx} y={ly+3.5} fill="#ffffff" fontSize="9" fontWeight="800" textAnchor="middle" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>G{g.l}</text>
             </g>;
           })}
 
@@ -178,9 +178,9 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
           {SECTIONS.map(s => {
             const hi = s.num===112; const cd = CROWD[s.num]; const sel = selectedSection?.num === s.num+100;
             return <g key={`u${s.num}`} className="cursor-pointer" onClick={e => { e.stopPropagation(); handleSectionClick(s, 'upper'); }}>
-              <path d={sectorPath(UR1,UR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.12)':hi?'#0f1a35':cd?.fill||'#0a1424'} stroke={sel?'#22d3ee':hi?'#22d3ee':'#1a2a42'} strokeWidth={sel?1.2:hi?0.8:0.3} strokeOpacity={sel?0.6:hi?0.4:0.15} className="hover:brightness-125 transition-all duration-200" />
-              {ROWS_U.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#1e3352" strokeWidth="0.2" strokeOpacity="0.08" />)}
-              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((UR1+UR2)/2,m);return <text x={x} y={y+3} fill={sel||hi?'#67e8f9':'#2a4060'} fontSize="7" fontWeight="600" textAnchor="middle" opacity={sel?1:hi?0.8:0.4} className="pointer-events-none">{s.num+100}</text>;})()}
+              <path d={sectorPath(UR1,UR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.3)':hi?'#3b6ba5':cd?.fill||'#1e3a66'} stroke={sel?'#67e8f9':hi?'#67e8f9':'#60a5fa'} strokeWidth={sel?2.5:hi?2:1} strokeOpacity={sel?1:hi?0.8:0.4} className="hover:brightness-125 transition-all duration-200" />
+              {ROWS_U.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#93c5fd" strokeWidth="0.3" strokeOpacity="0.15" />)}
+              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((UR1+UR2)/2,m);return <text x={x} y={y+3} fill="#ffffff" fontSize="9" fontWeight="800" textAnchor="middle" opacity={sel?1:hi?1:0.7} className="pointer-events-none" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>{s.num+100}</text>;})()}
             </g>;
           })}
 
@@ -188,10 +188,10 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
           {SECTIONS.map(s => {
             const hi = s.num===112; const cd = CROWD[s.num]; const sel = selectedSection?.num === s.num;
             return <g key={`l${s.num}`} className="cursor-pointer" onClick={e => { e.stopPropagation(); handleSectionClick(s, 'lower'); }}>
-              <path d={sectorPath(LR1,LR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.12)':hi?'#0f1a35':cd?.fill||'#0c1828'} stroke={sel?'#22d3ee':hi?'#22d3ee':'#1a2a42'} strokeWidth={sel?1.2:hi?0.8:0.3} strokeOpacity={sel?0.6:hi?0.4:0.15} className="hover:brightness-125 transition-all duration-200" />
-              {ROWS_L.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#1e3352" strokeWidth="0.2" strokeOpacity="0.08" />)}
-              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((LR1+LR2)/2,m);return <text x={x} y={y+3} fill={sel||hi?'#a5f3fc':'#4a6a8a'} fontSize={hi?9:8} fontWeight="700" textAnchor="middle" opacity={sel?1:hi?0.9:0.35} className="pointer-events-none">{s.num}</text>;})()}
-              {hi && <path d={sectorPath(LR1-2,LR2+2,s.a1-0.5,s.a2+0.5)} fill="none" stroke="#22d3ee" strokeWidth="0.5" strokeOpacity="0.1" className="animate-[pulse_3s_ease-in-out_infinite] pointer-events-none" />}
+              <path d={sectorPath(LR1,LR2,s.a1,s.a2)} fill={sel?'rgba(34,211,238,0.3)':hi?'#3b6ba5':cd?.fill||'#2b4c80'} stroke={sel?'#67e8f9':hi?'#67e8f9':'#60a5fa'} strokeWidth={sel?2.5:hi?2:1} strokeOpacity={sel?1:hi?0.8:0.4} className="hover:brightness-125 transition-all duration-200" />
+              {ROWS_L.map(r => <path key={r} d={arcStroke(r,s.a1+1,s.a2-1)} fill="none" stroke="#93c5fd" strokeWidth="0.3" strokeOpacity="0.15" />)}
+              {(()=>{const m=(s.a1+s.a2)/2;const[x,y]=p2c((LR1+LR2)/2,m);return <text x={x} y={y+3.5} fill="#ffffff" fontSize={hi?11:10} fontWeight="800" textAnchor="middle" opacity={sel?1:hi?1:0.75} className="pointer-events-none" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>{s.num}</text>;})()}
+              {hi && <path d={sectorPath(LR1-2,LR2+2,s.a1-0.5,s.a2+0.5)} fill="none" stroke="#22d3ee" strokeWidth="1" strokeOpacity="0.5" className="animate-[pulse_3s_ease-in-out_infinite] pointer-events-none" />}
             </g>;
           })}
 
@@ -203,9 +203,9 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
           <circle cx={CX} cy={CY} r={LR1-5} fill="none" stroke="#1a2a42" strokeWidth="0.4" strokeOpacity="0.1" />
 
           {/* Pitch */}
-          <rect x="370" y="410" width="260" height="180" rx="5" fill="#05120a" stroke="#10b981" strokeOpacity="0.15" strokeWidth="1" />
-          <rect x="377" y="417" width="246" height="166" fill="#081a10" rx="3" />
-          <g stroke="#10b981" strokeWidth="0.5" fill="none" opacity="0.3">
+          <rect x="370" y="410" width="260" height="180" rx="5" fill="#0d2e18" stroke="#34d399" strokeOpacity="0.3" strokeWidth="1.5" />
+          <rect x="377" y="417" width="246" height="166" fill="#134222" rx="3" />
+          <g stroke="#34d399" strokeWidth="1" fill="none" opacity="0.6">
             <rect x="384" y="424" width="232" height="152" /><line x1="500" y1="424" x2="500" y2="576" />
             <circle cx="500" cy="500" r="20" /><circle cx="500" cy="500" r="1.5" fill="#10b981" />
             <rect x="384" y="460" width="36" height="80" /><rect x="580" y="460" width="36" height="80" />
@@ -217,21 +217,21 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
             <path d={routePath} stroke="url(#routeGrad)" strokeWidth="3.5" strokeLinecap="round" opacity="0.08" filter="url(#routeGlow)" />
             <path d={routePath} stroke="url(#routeGrad)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="6 4" opacity="0.7" className="animate-dash" />
             {(()=>{const[x,y]=p2c(CONCOURSE_MID,USER_ANGLE);return<>
-              <circle cx={x} cy={y} r="10" fill="#3b82f6" fillOpacity="0.06" className="animate-[pulse_2s_ease-in-out_infinite]" />
-              <circle cx={x} cy={y} r="5" fill="#3b82f6" fillOpacity="0.12" stroke="#60a5fa" strokeWidth="1" />
-              <circle cx={x} cy={y} r="2.5" fill="#60a5fa" />
-              <text x={x+12} y={y-4} fill="#93c5fd" fontSize="7" fontWeight="700">YOU</text>
-              <text x={x+12} y={y+4} fill="#3a5a80" fontSize="5" fontWeight="600">S. Concourse</text>
+              <circle cx={x} cy={y} r="10" fill="#3b82f6" fillOpacity="0.2" className="animate-[pulse_2s_ease-in-out_infinite]" />
+              <circle cx={x} cy={y} r="5" fill="#3b82f6" fillOpacity="0.4" stroke="#60a5fa" strokeWidth="1.5" />
+              <circle cx={x} cy={y} r="2.5" fill="#ffffff" />
+              <text x={x+14} y={y-4} fill="#ffffff" fontSize="9" fontWeight="800" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>YOU</text>
+              <text x={x+14} y={y+6} fill="#e2e8f0" fontSize="7" fontWeight="700" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>S. Concourse</text>
             </>;})()}
             {(()=>{const[x,y]=p2c(SEAT_R,SEAT_ANGLE);return<>
-              <circle cx={x} cy={y} r="8" fill="#22d3ee" fillOpacity="0.06" className="animate-[pulse_2.5s_ease-in-out_infinite]" />
-              <circle cx={x} cy={y} r="4" fill="#22d3ee" fillOpacity="0.15" stroke="#67e8f9" strokeWidth="1" />
-              <circle cx={x} cy={y} r="2" fill="#67e8f9" />
-              <text x={x+10} y={y-3} fill="#a5f3fc" fontSize="6.5" fontWeight="700">SEC 112 · F24</text>
+              <circle cx={x} cy={y} r="8" fill="#22d3ee" fillOpacity="0.2" className="animate-[pulse_2.5s_ease-in-out_infinite]" />
+              <circle cx={x} cy={y} r="4" fill="#22d3ee" fillOpacity="0.4" stroke="#67e8f9" strokeWidth="1.5" />
+              <circle cx={x} cy={y} r="2" fill="#ffffff" />
+              <text x={x+12} y={y-3} fill="#ffffff" fontSize="8" fontWeight="800" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>SEC 112 · F24</text>
             </>;})()}
             {(()=>{const[x,y]=p2c(CONCOURSE_MID,270);return<>
-              <rect x={x-22} y={y-9} width="44" height="18" rx="9" fill="#22d3ee" fillOpacity="0.08" stroke="#22d3ee" strokeWidth="0.5" strokeOpacity="0.25" />
-              <text x={x} y={y+3} fill="#a5f3fc" fontSize="7" fontWeight="700" textAnchor="middle">~4 min</text>
+              <rect x={x-24} y={y-10} width="48" height="20" rx="10" fill="#22d3ee" fillOpacity="0.4" stroke="#22d3ee" strokeWidth="1.5" />
+              <text x={x} y={y+3.5} fill="#ffffff" fontSize="9" fontWeight="800" textAnchor="middle" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>~4 min</text>
             </>;})()}
           </g>}
 
@@ -239,24 +239,24 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers }: { activeLaye
           {(activeLayers.has('queue')||activeLayers.has('ai'))&&GATES.map(g=>{
             const[x,y]=p2c(WR+28,g.a);const w=g.l==='N'?'14m':g.l==='E'?'8m':'4m';const bad=g.l==='N';
             return<g key={`q${g.l}`} className="pointer-events-none">
-              <rect x={x-20} y={y-7} width="40" height="14" rx="7" fill={bad?'#f43f5e':'#10b981'} fillOpacity="0.06" stroke={bad?'#f43f5e':'#10b981'} strokeWidth="0.5" strokeOpacity="0.3"/>
-              <text x={x} y={y+3} fill={bad?'#fb7185':'#34d399'} fontSize="7" fontWeight="700" textAnchor="middle">{g.l}·{w}</text>
+              <rect x={x-20} y={y-7} width="40" height="14" rx="7" fill={bad?'#f43f5e':'#10b981'} fillOpacity="0.4" stroke={bad?'#f43f5e':'#10b981'} strokeWidth="1" strokeOpacity="0.8"/>
+              <text x={x} y={y+3.5} fill="#ffffff" fontSize="8" fontWeight="800" textAnchor="middle" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>{g.l}·{w}</text>
             </g>;
           })}
 
           {/* POIs */}
           {POIS.map(poi => {
-            let vis=true,hi=false,ic="#3a5a80",bg="rgba(58,90,128,0.03)",bc="rgba(58,90,128,0.08)";
-            if(poi.type==='Medical'){vis=!activeLayers.size||activeLayers.has('medical');if(activeLayers.has('medical')){hi=true;ic="#f43f5e";bg="rgba(244,63,94,0.05)";bc="rgba(244,63,94,0.15)";}}
+            let vis=true,hi=false,ic="#ffffff",bg="rgba(59,130,246,0.3)",bc="rgba(96,165,250,0.8)";
+            if(poi.type==='Medical'){vis=!activeLayers.size||activeLayers.has('medical');if(activeLayers.has('medical')){hi=true;ic="#ffffff";bg="rgba(244,63,94,0.4)";bc="rgba(251,113,133,0.9)";}}
             else if(['Metro','Bus','Taxi','Parking'].includes(poi.type)){vis=!activeLayers.size;}
             else{vis=!activeLayers.size||activeLayers.has('crowd')||activeLayers.has('queue')||activeLayers.has('ai');}
             if(!vis&&activeLayers.size>0)return null;
             return<g key={poi.id} transform={`translate(${poi.x},${poi.y})`} className="cursor-pointer">
-              {hi&&<circle cx="0" cy="0" r={12} fill={bg} className="animate-[pulse_2s_ease-in-out_infinite]" opacity="0.3"/>}
-              <circle cx="0" cy="0" r={hi?8:5} fill={bg} stroke={bc} strokeWidth={hi?0.7:0.3}/>
-              <text x="0" y={hi?14:10} fill={ic} fontSize="5" fontWeight="600" textAnchor="middle" opacity={hi?0.7:0.25}>{poi.label}</text>
-              <foreignObject x={hi?-4:-2.5} y={hi?-4:-2.5} width={hi?8:5} height={hi?8:5} style={{pointerEvents:'none'}}>
-                <div style={{color:ic,width:'100%',height:'100%'}}>{React.createElement(POI_ICONS[poi.type]||Map,{size:hi?8:5,strokeWidth:2})}</div>
+              {hi&&<circle cx="0" cy="0" r={16} fill={bg} className="animate-[pulse_2s_ease-in-out_infinite]" opacity="0.5"/>}
+              <circle cx="0" cy="0" r={hi?12:7} fill={bg} stroke={bc} strokeWidth={hi?1.5:1}/>
+              <text x="0" y={hi?20:15} fill="#ffffff" fontSize="8" fontWeight="800" textAnchor="middle" opacity="1" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.9)' }}>{poi.label}</text>
+              <foreignObject x={hi?-6:-4} y={hi?-6:-4} width={hi?12:8} height={hi?12:8} style={{pointerEvents:'none'}}>
+                <div style={{color:ic,width:'100%',height:'100%'}}>{React.createElement(POI_ICONS[poi.type]||Map,{size:hi?12:8,strokeWidth:3})}</div>
               </foreignObject>
             </g>;
           })}

@@ -40,8 +40,8 @@ export default function AIChat({ role }: { role: Role }) {
   };
 
   return (
-    <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative"
-      style={{ background: 'rgba(4,8,15,0.9)', backdropFilter: 'blur(40px)' }}>
+    <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative shadow-[-4px_0_24px_rgba(0,0,0,0.2)]"
+      style={{ background: 'rgba(18,34,64,0.55)', backdropFilter: 'blur(40px)' }}>
       {/* Left border */}
       <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-white/[0.03] via-white/[0.06] to-white/[0.03]" />
 
@@ -97,28 +97,26 @@ export default function AIChat({ role }: { role: Role }) {
       </div>
 
       {/* Input */}
-      <div className="p-3 shrink-0 relative">
-        <div className="absolute top-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
-        <div className="flex gap-2 mt-1">
-          <input
-            value={input} onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSend()}
-            placeholder={role === 'security' ? 'Ask about threats, protocols...' : 'Ask about the venue, directions...'}
-            className="flex-1 bg-white/[0.025] border border-white/[0.06] rounded-xl px-3.5 py-2 text-[12px] text-white/80 placeholder:text-white/20 focus:outline-none focus:border-cyan-500/25 transition-all"
-          />
-          <button onClick={handleSend} disabled={isLoading || !input.trim()}
-            className="px-3 py-2 rounded-xl transition-all disabled:opacity-20 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20">
-            <Send className="w-3.5 h-3.5" />
-          </button>
-        </div>
-        <div className="flex gap-1.5 mt-2">
+      <div className="p-4 shrink-0 relative bg-white/[0.01]">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+        <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
           {(quickQuestions[role] || quickQuestions.fan).map(q => (
             <button key={q} onClick={() => setInput(q)}
-              className="text-[9px] text-white/25 bg-white/[0.02] border border-white/[0.04] px-2 py-1 rounded-lg hover:bg-white/[0.05] hover:text-white/50 transition-all">
+              className="text-[11px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/80 hover:bg-white/[0.08] hover:text-white whitespace-nowrap transition-all">
               {q}
             </button>
           ))}
         </div>
+        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="relative group">
+          <input type="text" value={input} onChange={e => setInput(e.target.value)}
+            placeholder={role === 'security' ? 'Ask about threats, protocols...' : 'Ask about the venue, directions...'}
+            disabled={isLoading}
+            className="w-full bg-white/[0.025] border border-white/[0.06] rounded-xl pl-4 pr-10 py-3 text-[13px] text-white placeholder:text-white/60 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all disabled:opacity-50" />
+          <button type="submit" disabled={!input.trim() || isLoading}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 disabled:opacity-30 transition-all">
+            <Send className="w-4 h-4" />
+          </button>
+        </form>
       </div>
     </div>
   );
