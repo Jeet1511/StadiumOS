@@ -1,14 +1,10 @@
-import { Sparkles, Navigation, Users, Clock, Accessibility, HeartPulse, ShieldAlert, Train } from 'lucide-react';
+import { Sparkles, Users, Clock, HeartPulse } from 'lucide-react';
 import type { LayerDef } from '../types';
 
-// Extracted from App.tsx lines 91-100
+// Map-only overlays. Wayfinding/Accessibility/Transport/Security are in sidebar.
 export const LAYERS: LayerDef[] = [
   { id: 'ai', label: 'AI Insights', icon: Sparkles },
-  { id: 'navigation', label: 'Walking Routes', icon: Navigation },
-  { id: 'crowd', label: 'Crowd Heatmap', icon: Users },
-  { id: 'queue', label: 'Wait Times', icon: Clock },
-  { id: 'accessibility', label: 'Accessible Routes', icon: Accessibility },
-  { id: 'medical', label: 'Medical Stations', icon: HeartPulse },
-  { id: 'security', label: 'Security & Emer.', icon: ShieldAlert },
-  { id: 'transportation', label: 'Transport Status', icon: Train },
+  { id: 'crowd', label: 'Crowd Density', icon: Users },
+  { id: 'queue', label: 'Gate Wait Times', icon: Clock },
+  { id: 'medical', label: 'Medical', icon: HeartPulse },
 ];
