@@ -1,15 +1,37 @@
-/* View: Header — Top status bar */
+/**
+ * @module Header
+ * @description Top status bar showing venue info, search trigger, and emergency alerts.
+ * Provides quick access to the command palette (Ctrl+K) and real-time status indicators.
+ *
+ * Accessibility: aria-labels on all interactive elements, keyboard shortcut hint.
+ * Performance: React.memo prevents re-renders when props haven't changed.
+ *
+ * Hackathon Alignment:
+ * - FIFA World Cup 2026 branding with venue identification
+ * - Emergency protocol visual indicators for security operations
+ * - Quick search access for operational efficiency
+ */
+import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Command, Globe, Eye, Bell, MapPin, AlertTriangle } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import type { GlobalMode } from '../../models/types';
 
 interface HeaderProps {
-  mode: GlobalMode;
-  onOpenSearch: () => void;
+  /** Current global operational mode */
+  readonly mode: GlobalMode;
+  /** Callback to open the command palette search */
+  readonly onOpenSearch: () => void;
 }
 
-export default function Header({ mode, onOpenSearch }: HeaderProps) {
+/** Static icon button configs — extracted from render path for performance */
+const HEADER_ACTIONS = [
+  { Icon: Globe, label: 'Language settings' },
+  { Icon: Eye, label: 'Accessibility options' },
+  { Icon: Bell, label: 'Notifications and alerts' },
+] as const;
+
+export default memo(function Header({ mode, onOpenSearch }: HeaderProps) {
   return (
     <motion.header
       initial={{ y: -16, opacity: 0 }}
@@ -27,7 +49,7 @@ export default function Header({ mode, onOpenSearch }: HeaderProps) {
 
       {/* Search */}
       <div className="flex-1 max-w-md">
-        <button onClick={onOpenSearch} id="search-trigger" aria-label="Search (Ctrl+K)"
+        <button type="button" onClick={onOpenSearch} id="search-trigger" aria-label="Search stadium features (Ctrl+K)"
           className="w-full rounded-xl pl-3.5 pr-10 py-1.5 text-left group flex items-center bg-white/[0.025] border border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.04] transition-all">
           <Search className="w-3.5 h-3.5 text-white/25 group-hover:text-white/40 mr-2.5 shrink-0" />
           <span className="text-[12px] text-white/25 group-hover:text-white/40 font-medium truncate">Search venue, protocols, or ask AI...</span>
@@ -67,12 +89,12 @@ export default function Header({ mode, onOpenSearch }: HeaderProps) {
 
         <div className="w-px h-3.5 bg-white/[0.05] hidden md:block" />
 
-        {/* Icons */}
+        {/* Action icons — uses static HEADER_ACTIONS array */}
         <div className="flex items-center gap-0">
-          {[Globe, Eye, Bell].map((Icon, i) => (
-            <button key={i} id={`topbar-action-${i}`} aria-label={['Language', 'Accessibility', 'Alerts'][i]}
+          {HEADER_ACTIONS.map((action, i) => (
+            <button key={action.label} type="button" id={`topbar-action-${i}`} aria-label={action.label}
               className="p-2 rounded-lg text-white/25 hover:text-white/60 hover:bg-white/[0.04] transition-all relative">
-              <Icon className="w-3.5 h-3.5" />
+              <action.Icon className="w-3.5 h-3.5" />
               {i === 2 && (
                 <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-rose-500 rounded-full shadow-[0_0_5px_rgba(251,113,133,0.5)]" />
               )}
@@ -82,4 +104,4 @@ export default function Header({ mode, onOpenSearch }: HeaderProps) {
       </div>
     </motion.header>
   );
-}
+});

@@ -8,7 +8,7 @@
  * Performance: CSS containment, will-change hints, content-visibility.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+/* Fonts loaded via <link> in index.html to avoid render-blocking @import chain */
 @import "tailwindcss";
 
 @theme {
@@ -149,19 +149,24 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 /* Isolate rendering for heavy components to prevent layout thrashing */
 [role="main"] {
   contain: layout style;
-  will-change: contents;
 }
 [role="navigation"] {
   contain: layout style paint;
 }
+/* Off-screen rendering optimization — panels skip layout/paint when not visible */
 [role="complementary"] {
-  contain: layout style;
+  contain: layout style paint;
   content-visibility: auto;
   contain-intrinsic-size: 380px 100vh;
 }
+/* Reduce GPU layer promotion — only animate elements that actually move */
+.animate-float, .animate-pulse, .animate-ping {
+  will-change: transform, opacity;
+}
 
-/* GPU-accelerated transforms for interactive elements */
-svg {
+
+/* GPU-accelerated transforms for the stadium digital twin map only */
+#stadium-map svg {
   will-change: transform;
   contain: layout style;
 }

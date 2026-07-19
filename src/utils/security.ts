@@ -130,7 +130,7 @@ export function generateNonce(): string {
  */
 export function isSafeUrl(url: string): boolean {
   try {
-    const parsed = new URL(url, window.location.origin);
+    const parsed = new URL(url, 'http://localhost');
     return ['http:', 'https:', 'mailto:'].includes(parsed.protocol);
   } catch {
     return false;

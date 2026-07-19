@@ -207,27 +207,35 @@ export interface VolunteerTask {
 
 /** Return type for the useAppState controller hook. */
 export interface AppStateReturn {
-  view: AppView;
-  role: Role;
-  activeNav: string;
-  globalMode: GlobalMode;
-  activeLayers: Set<Layer>;
-  commandPaletteOpen: boolean;
-  profileOpen: boolean;
-  selectRole: (r: Role) => void;
-  navigate: (id: string) => void;
-  toggleLayer: (l: Layer) => void;
-  switchRole: () => void;
-  setCommandPaletteOpen: (open: boolean) => void;
-  setProfileOpen: (open: boolean) => void;
+  readonly view: AppView;
+  readonly role: Role;
+  readonly activeNav: string;
+  readonly globalMode: GlobalMode;
+  readonly activeLayers: Set<Layer>;
+  readonly commandPaletteOpen: boolean;
+  readonly profileOpen: boolean;
+  readonly selectRole: (r: Role) => void;
+  readonly navigate: (id: string) => void;
+  readonly toggleLayer: (l: Layer) => void;
+  readonly switchRole: () => void;
+  readonly setCommandPaletteOpen: (open: boolean) => void;
+  readonly setProfileOpen: (open: boolean) => void;
+  /** Stable callback: opens profile modal without creating new function ref */
+  readonly openProfile: () => void;
+  /** Stable callback: closes profile modal without creating new function ref */
+  readonly closeProfile: () => void;
+  /** Stable callback: opens command palette without creating new function ref */
+  readonly openCommandPalette: () => void;
+  /** Stable callback: closes command palette without creating new function ref */
+  readonly closeCommandPalette: () => void;
 }
 
 /** Return type for the useAI controller hook. */
 export interface AIStateReturn {
-  messages: ChatMessage[];
-  isLoading: boolean;
-  send: (text: string) => Promise<void>;
-  clear: () => void;
+  readonly messages: ChatMessage[];
+  readonly isLoading: boolean;
+  readonly send: (text: string) => Promise<void>;
+  readonly clear: () => void;
 }
 
 /** Return type for the useLiveData controller hook. */
@@ -243,9 +251,9 @@ export interface LiveDataReturn {
 
 /** Return type for the useMatchClock controller hook. */
 export interface MatchClockReturn {
-  min: number;
-  sec: number;
-  matchTime: string;
-  clockTime: string;
-  now: Date;
+  readonly min: number;
+  readonly sec: number;
+  readonly matchTime: string;
+  readonly clockTime: string;
+  readonly now: Date;
 }

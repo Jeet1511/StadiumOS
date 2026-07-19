@@ -46,10 +46,15 @@ export function parseTicketId(ticketId: string): ParsedTicket | null {
   const match = ticketId.trim().toUpperCase().match(TICKET_REGEX);
   if (!match) return null;
 
+  const sectionSeed = match[1]!
+    .slice(0, 3)
+    .split('')
+    .reduce((sum, digit) => sum + Number(digit), 0);
+
   return {
-    section: Math.min(parseInt(match[1].slice(0, 3), 10) % 200, 199) + 100,
-    row: match[2],
-    seat: parseInt(match[3], 10),
+    section: 100 + sectionSeed,
+    row: match[2]!,
+    seat: parseInt(match[3]!, 10),
   };
 }
 

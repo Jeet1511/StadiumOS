@@ -85,30 +85,39 @@ StadiumOS follows a strict **Model-View-Controller (MVC)** architecture:
 
 ```
 src/
-├── models/          # Data layer — types, constants, configuration
-│   ├── types.ts     # TypeScript interfaces & type definitions
-│   └── constants.ts # Role configs, navigation, layers, POIs
+├── models/            # Data layer — types, constants, simulation
+│   ├── types.ts       # TypeScript interfaces & type definitions
+│   ├── constants.ts   # Role configs, navigation, layers, POIs
+│   └── simulation.ts  # Real-time data simulation engine
 │
-├── views/           # Presentation layer — pure UI components
-│   ├── layouts/     # AppShell, Sidebar, Header
-│   ├── pages/       # Landing, Dashboard (panel router)
-│   ├── widgets/     # StadiumMap, MatchTicker, AIChat
-│   └── overlays/    # CommandPalette, ProfileModal
+├── views/             # Presentation layer — pure UI components
+│   ├── layouts/       # AppShell, Sidebar, Header
+│   ├── pages/         # Landing, Dashboard (panel router)
+│   ├── panels/        # Feature panels (Crowd, Security, etc.)
+│   ├── widgets/       # StadiumMap, MatchTicker, AIChat
+│   ├── shared/        # Reusable components (GlassCard, PanelShell)
+│   └── overlays/      # CommandPalette, ProfileModal
 │
-├── controllers/     # Business logic — state management
-│   └── useAppState.ts  # Central app state hook
+├── controllers/       # Business logic — state management
+│   ├── useAppState.ts    # Central app state hook
+│   ├── useLiveData.ts    # Real-time data polling hook
+│   ├── useMatchClock.ts  # Match clock progression
+│   ├── useAI.ts          # AI chat controller
+│   └── LiveDataContext.tsx # Shared data context provider
 │
-├── services/        # External integrations
-│   └── ai-service.ts   # Gemini API client with streaming
+├── services/          # External integrations
+│   └── ai-service.ts  # Gemini 2.0 Flash API client with streaming
 │
-├── components/      # Feature panels
-│   └── panels/      # Accessibility, Security, Sustainability, etc.
+├── utils/             # Shared utilities
+│   ├── cn.ts          # Tailwind class merger (clsx + tailwind-merge)
+│   ├── security.ts    # XSS sanitization, rate limiting, CSP
+│   ├── validation.ts  # Ticket format parsing & validation
+│   └── performance.ts # Debounce, throttle, measurePerformance
 │
-├── utils/           # Shared utilities
-│   └── cn.ts        # Tailwind class merger (clsx + tailwind-merge)
+├── __tests__/         # Unit test suites (Vitest)
 │
 └── styles/
-    └── index.css    # Design system tokens, glass morphism, animations
+    └── index.css      # Design system tokens, glass morphism, animations
 ```
 
 ### Design Decisions
@@ -127,8 +136,8 @@ src/
 | **Styling** | Tailwind CSS v4, Custom Glass Morphism System |
 | **AI Engine** | Google Gemini 2.0 Flash (Generative AI SDK) |
 | **Animation** | Framer Motion, CSS Keyframe Animations |
-| **Charts** | Recharts (D3-based) |
 | **Icons** | Lucide React |
+| **Testing** | Vitest |
 | **Build** | Vite 8, pnpm |
 | **Deployment** | Vercel |
 
@@ -217,20 +226,85 @@ AI:       "Density anomaly detected at Gate N — 14 min queue, 91%
 
 ---
 
-## 🏆 Hackathon Alignment
+## 🏆 Hackathon Challenge Alignment
 
-This project directly addresses the hackathon challenge across **8 key areas**:
+This project directly addresses **every** hackathon challenge area with **specific, working implementations**:
 
-| Challenge Area | StadiumOS Feature |
-|---------------|-------------------|
-| ✅ Navigation | AI wayfinding with animated routes |
-| ✅ Crowd Management | Real-time density heatmap + AI anomaly detection |
-| ✅ Accessibility | Wheelchair routes, elevator mapping, accessible facilities |
-| ✅ Transportation | Multi-modal transit hub with live status |
-| ✅ Sustainability | Energy/water/waste dashboards with carbon tracking |
-| ✅ Multilingual | AI assistant supports multilingual interactions |
-| ✅ Operational Intelligence | Role-based command center with analytics |
-| ✅ Real-time Decision Support | Gemini-powered threat assessment & recommendations |
+| # | Challenge Area | StadiumOS Implementation | Key Files |
+|---|---------------|--------------------------|-----------|
+| 1 | **🤖 GenAI Integration** | Gemini 2.0 Flash with streaming, role-adaptive system prompts, live stadium data in context, 4 distinct AI personalities | `ai-service.ts`, `useAI.ts`, `AIChat.tsx` |
+| 2 | **🗺️ Navigation & Wayfinding** | SVG digital twin with animated wayfinding routes, gate queue overlays, POI markers, click-to-inspect sections | `StadiumMap.tsx`, `WayfindingPanel.tsx` |
+| 3 | **👥 Crowd Management** | Real-time density heatmap, critical zone alerts (>85%), trend indicators (rising/falling/stable), AI anomaly detection | `CrowdPanel.tsx`, `useLiveData.ts`, `simulation.ts` |
+| 4 | **♿ Accessibility** | Wheelchair-accessible route planning, elevator/ramp detection, hearing loop zones, accessible facility locator, WCAG 2.1 AA compliance | `AccessibilityPanel.tsx`, `AppShell.tsx` |
+| 5 | **🚌 Transportation** | Multi-modal transit hub (Metro, Bus, Taxi, Parking), live capacity/delay tracking, AI-optimized departure recommendations | `TransportPanel.tsx` |
+| 6 | **🌱 Sustainability** | Energy/water/waste KPIs, carbon offset tracking, FIFA Green Score (B+), AI sustainability recommendations | `SustainabilityPanel.tsx` |
+| 7 | **🎫 Smart Ticketing** | FIFA WC26 ticket format validation (`WC26-XX-NNNNNN-LNN`), QR code visualization, section-level seat navigation | `TicketPanel.tsx`, `validation.ts` |
+| 8 | **🛡️ Security & Emergency** | AI threat assessment, crowd surge prediction, one-click evacuation protocol, emergency mode visual transformation | `SecurityPanel.tsx`, `useAppState.ts` |
+| 9 | **🙋 Volunteer Management** | Priority-ranked task queue, multilingual translation support, shift tracking, incident reporting | `VolunteerPanel.tsx` |
+| 10 | **🌐 Multilingual Support** | AI assistant responds in any language requested, volunteer translation quick-actions, international fan personas | `ai-service.ts` system prompt |
+
+---
+
+## ⚡ Performance & Efficiency
+
+StadiumOS implements **production-grade** performance optimizations beyond MVP level:
+
+### Rendering Efficiency
+- **React.memo** on every component with custom comparators where needed (`StadiumMap`, `GlassCard`, `StatusBadge`, `AppShell`, `MatchTicker`, `Landing`, `ProfileModal`)
+- **useCallback** on every event handler — zero inline arrow functions in JSX
+- **useMemo** on all derived computations (totalAttendance, avgDensity, criticalZones)
+- **Stable callback references** — `useAppState` returns `openProfile`/`closeProfile` instead of `() => setProfileOpen(true)`
+- **useRef-based change detection** — `useLiveData` compares previous data snapshots and skips re-renders when data hasn't meaningfully changed (density threshold: 2%)
+
+### Code Splitting & Bundle Optimization
+- **React.lazy** for all panels and the Landing page (10+ code-split chunks)
+- **Vite manual chunks** — vendor libraries split into `vendor-react`, `vendor-motion`, `vendor-ai`, `vendor-icons`
+- **Suspense boundaries** at panel and page levels for progressive loading
+
+### CSS & Layout Performance
+- **CSS containment** (`contain: layout style paint`) on navigation, main content, and complementary panels
+- **content-visibility: auto** on side panels — browser skips layout/paint for off-screen content
+- **Scoped will-change** — only applied to elements that actually animate (`.animate-float`, `.animate-pulse`), not globally
+- **Font preloading** via HTML `<link rel="preconnect">` — zero layout shift from font loading
+
+### Data Flow Efficiency
+- **Single polling instance** — `LiveDataProvider` context eliminates N independent `setInterval` timers across N panels
+- **Split state architecture** — crowd, transport, sustainability, and queue data are separate state variables so unchanged data types don't trigger re-renders
+- **Streaming AI responses** via `requestAnimationFrame`-batched DOM updates (not per-token state updates)
+- **Rate limiting** on AI API calls (10 requests/minute) prevents abuse and reduces costs
+
+---
+
+## 🔒 Security
+
+- **XSS Protection** — All user inputs sanitized via `sanitizeInput()` before AI processing or DOM rendering
+- **Rate Limiting** — Client-side rate limiter (10 requests/minute) prevents API abuse
+- **API Key Isolation** — Gemini API key loaded from environment variables, never exposed in error messages
+- **Error Masking** — Internal error details never leaked to client-facing UI
+- **Input Validation** — Ticket format parsing with strict regex validation (`WC26-XX-NNNNNN-LNN`)
+- **CSP Headers** — Content Security Policy utility for deployment hardening
+
+---
+
+## 🧪 Testing
+
+**120+ tests** across **8 test suites** covering all layers:
+
+| Test Suite | Tests | Coverage Area |
+|------------|-------|---------------|
+| `ai-service.test.ts` | 12 | API integration, rate limiting, error handling |
+| `security.test.ts` | 26 | XSS sanitization, rate limiting, CSP |
+| `simulation.test.ts` | 20 | Data generation, zone creation, metrics |
+| `validation.test.ts` | 12 | Ticket parsing, format validation |
+| `controllers.test.ts` | 17 | useAppState actions, useLiveData polling |
+| `constants.test.ts` | 14 | Role configs, navigation, layers |
+| `cn.test.ts` | 7 | Tailwind class merging |
+| `performance.test.ts` | 12 | Debounce, throttle, measurePerformance |
+
+```bash
+pnpm test     # Run all tests
+pnpm build    # Production build with type checking
+```
 
 ---
 
@@ -242,12 +316,13 @@ This project directly addresses the hackathon challenge across **8 key areas**:
 
 ## 📄 License
 
-This project was built for the **FIFA World Cup 2026 GenAI Hackathon**.
+This project was built for the **FIFA World Cup 2026 GenAI Hackathon** on Hack2Skill.
 
 ---
 
 <div align="center">
 
-
+**Built with ❤️ for FIFA World Cup 2026**
 
 </div>
+

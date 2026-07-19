@@ -16,7 +16,7 @@
  * Efficiency: Debounced streaming updates, message history limit,
  * abort support for cancelled requests.
  */
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { sendMessage, streamMessage } from '../services/ai-service';
 import type { Role, ChatMessage, AIStateReturn } from '../models/types';
 
@@ -40,14 +40,52 @@ export function useAI(role: Role): AIStateReturn {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const abortRef = useRef(false);
+  const isLoadingRef = useRef(false);
+  const pendingAssistantIdRef = useRef<string | null>(null);
+  const pendingContentRef = useRef('');
+  const frameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, []);
+
+  const commitAssistantMessage = useCallback((assistantId: string, content: string, isStreaming: boolean) => {
+    setMessages(prev => prev.map(m => (
+      m.id === assistantId
+        ? { ...m, content, isStreaming }
+        : m
+    )));
+  }, []);
+
+  const scheduleAssistantUpdate = useCallback((assistantId: string, content: string) => {
+    pendingAssistantIdRef.current = assistantId;
+    pendingContentRef.current = content;
+
+    if (frameRef.current !== null) {
+      return;
+    }
+
+    frameRef.current = window.requestAnimationFrame(() => {
+      frameRef.current = null;
+      const pendingId = pendingAssistantIdRef.current;
+      if (!pendingId) return;
+      commitAssistantMessage(pendingId, pendingContentRef.current, true);
+    });
+  }, [commitAssistantMessage]);
 
   /**
    * Sends a message and streams the AI response token-by-token.
    * Falls back to non-streaming if streaming fails.
    */
   const send = useCallback(async (text: string) => {
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoadingRef.current) return;
     abortRef.current = false;
+    isLoadingRef.current = true;
+    setIsLoading(true);
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -70,42 +108,43 @@ export function useAI(role: Role): AIStateReturn {
       // Trim history for memory efficiency
       return next.length > MAX_MESSAGE_HISTORY ? next.slice(-MAX_MESSAGE_HISTORY) : next;
     });
-    setIsLoading(true);
 
     try {
       let accumulated = '';
       for await (const chunk of streamMessage(text.trim(), role)) {
         if (abortRef.current) break;
         accumulated += chunk;
-        const current = accumulated;
-        setMessages(prev =>
-          prev.map(m => m.id === assistantId ? { ...m, content: current } : m)
-        );
+        scheduleAssistantUpdate(assistantId, accumulated);
       }
-      setMessages(prev =>
-        prev.map(m => m.id === assistantId ? { ...m, isStreaming: false } : m)
-      );
+
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
+      }
+      commitAssistantMessage(assistantId, accumulated, false);
     } catch {
       // Fallback to non-streaming API call
       try {
         const response = await sendMessage(text.trim(), role);
-        setMessages(prev =>
-          prev.map(m => m.id === assistantId ? { ...m, content: response, isStreaming: false } : m)
-        );
+        commitAssistantMessage(assistantId, response, false);
       } catch {
-        setMessages(prev =>
-          prev.map(m => m.id === assistantId ? { ...m, content: 'AI temporarily unavailable.', isStreaming: false } : m)
-        );
+        commitAssistantMessage(assistantId, 'AI temporarily unavailable.', false);
       }
     } finally {
+      isLoadingRef.current = false;
       setIsLoading(false);
     }
-  }, [role, isLoading]);
+  }, [commitAssistantMessage, role, scheduleAssistantUpdate]);
 
   /** Clears conversation history and aborts any in-progress stream. */
   const clear = useCallback(() => {
     setMessages([]);
     abortRef.current = true;
+    isLoadingRef.current = false;
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
   }, []);
 
   return { messages, isLoading, send, clear };

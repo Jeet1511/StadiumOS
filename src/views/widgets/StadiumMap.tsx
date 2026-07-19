@@ -107,6 +107,13 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers, activeNav }: {
     if (cd) setSelectedSection({ num, x, y, data: cd });
   }, []);
 
+  /** Stable zoom/reset handlers — no inline arrows in JSX */
+  const handleZoomIn = useCallback(() => setScale(p => Math.min(5, p + 0.3)), []);
+  const handleZoomOut = useCallback(() => setScale(p => Math.max(0.4, p - 0.3)), []);
+  const handleZoomReset = useCallback(() => { setScale(1); setTranslate({ x: 0, y: 0 }); }, []);
+  const handleDismissSection = useCallback(() => setSelectedSection(null), []);
+  const handleStopPropagation = useCallback((e: React.MouseEvent) => e.stopPropagation(), []);
+
   const routePath = useMemo(() => {
     const pts: string[] = [];
     const [ux, uy] = p2c(CONCOURSE_MID, USER_ANGLE);
@@ -132,21 +139,21 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers, activeNav }: {
   const showRoute = activeLayers.has('navigation') || activeLayers.has('ai') || activeNav === 'nav' || activeNav === 'access' || activeNav === 'evac';
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center overflow-hidden" onClick={() => setSelectedSection(null)}>
-      {/* Zoom controls */}
+    <div className="absolute inset-0 flex items-center justify-center overflow-hidden" id="stadium-map" onClick={handleDismissSection}>
+      {/* Zoom controls — all handlers are stable useCallback refs */}
       <div className="absolute bottom-4 right-4 z-40 flex gap-1 glass-elevated rounded-xl p-1" role="group" aria-label="Map zoom controls">
-        <button onClick={() => setScale(p => Math.min(5, p+0.3))} aria-label="Zoom in" className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"><ZoomIn className="w-3.5 h-3.5" /></button>
-        <button onClick={() => setScale(p => Math.max(0.4, p-0.3))} aria-label="Zoom out" className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"><ZoomOut className="w-3.5 h-3.5" /></button>
-        <button onClick={() => {setScale(1);setTranslate({x:0,y:0});}} aria-label="Reset zoom" className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"><RotateCcw className="w-3.5 h-3.5" /></button>
+        <button type="button" onClick={handleZoomIn} aria-label="Zoom in" className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"><ZoomIn className="w-3.5 h-3.5" aria-hidden="true" /></button>
+        <button type="button" onClick={handleZoomOut} aria-label="Zoom out" className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"><ZoomOut className="w-3.5 h-3.5" aria-hidden="true" /></button>
+        <button type="button" onClick={handleZoomReset} aria-label="Reset zoom" className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"><RotateCcw className="w-3.5 h-3.5" aria-hidden="true" /></button>
         <span className="flex items-center text-[9px] text-white/20 font-mono px-1" aria-live="polite" aria-label={`Zoom level ${Math.round(scale*100)} percent`}>{Math.round(scale*100)}%</span>
       </div>
 
       {/* Section popup */}
       {selectedSection && (
-        <div className="absolute z-50 glass-float rounded-xl p-4 min-w-[200px]" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }} onClick={e => e.stopPropagation()}>
+        <div className="absolute z-50 glass-float rounded-xl p-4 min-w-[200px]" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }} onClick={handleStopPropagation}>
           <div className="flex items-center justify-between mb-3">
             <span className="text-[13px] font-bold text-white">Section {selectedSection.num}</span>
-            <button onClick={() => setSelectedSection(null)} className="text-white/30 hover:text-white"><X className="w-3.5 h-3.5" /></button>
+            <button type="button" onClick={handleDismissSection} aria-label="Close section details" className="text-white/30 hover:text-white"><X className="w-3.5 h-3.5" aria-hidden="true" /></button>
           </div>
           <div className="space-y-2">
             <div className="flex justify-between"><span className="text-[10px] text-white/35">Capacity</span><span className="text-[11px] font-semibold text-white/80">8,200</span></div>
@@ -288,5 +295,12 @@ const StadiumMap = React.memo(function StadiumMap({ activeLayers, activeNav }: {
       </div>
     </div>
   );
+}, function areEqual(prev, next) {
+  if (prev.activeNav !== next.activeNav) return false;
+  if (prev.activeLayers.size !== next.activeLayers.size) return false;
+  for (const layer of prev.activeLayers) {
+    if (!next.activeLayers.has(layer)) return false;
+  }
+  return true;
 });
 export default StadiumMap;

@@ -31,20 +31,30 @@ const MAX_MATCH_MINUTES = 90;
  * }
  */
 export function useMatchClock(startMin: number = 68, startSec: number = 12): MatchClockReturn {
-  const [min, setMin] = useState(startMin);
-  const [sec, setSec] = useState(startSec);
-  const [now, setNow] = useState(new Date());
+  const [clock, setClock] = useState(() => ({ min: startMin, sec: startSec, now: new Date() }));
 
   useEffect(() => {
     const t = setInterval(() => {
-      setNow(new Date());
-      setSec(prev => {
-        if (prev >= 59) { setMin(m => Math.min(m + 1, MAX_MATCH_MINUTES)); return 0; }
-        return prev + 1;
+      setClock(prev => {
+        if (prev.sec >= 59) {
+          return {
+            min: Math.min(prev.min + 1, MAX_MATCH_MINUTES),
+            sec: 0,
+            now: new Date(),
+          };
+        }
+
+        return {
+          min: prev.min,
+          sec: prev.sec + 1,
+          now: new Date(),
+        };
       });
     }, 1000);
     return () => clearInterval(t);
   }, []);
+
+  const { min, sec, now } = clock;
 
   /** Formatted match time string (e.g., "68:12") */
   const matchTime = useMemo(

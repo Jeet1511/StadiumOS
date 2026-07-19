@@ -14,9 +14,9 @@
  */
 
 import {
-  Ticket, Shield, Activity, Users, Home, ShieldAlert, Eye,
-  AlertTriangle, Map, Globe, Sparkles, Navigation, Accessibility,
-  Train, Sparkle, Clock, HeartPulse
+  Ticket, Shield, Activity, Users, Home,
+  AlertTriangle, Globe, Sparkles, Navigation, Accessibility,
+  Train, Clock, HeartPulse
 } from 'lucide-react';
 import type { RoleConfig, NavItem, LayerDef, POI } from './types';
 
@@ -88,7 +88,7 @@ export const ROLES: readonly RoleConfig[] = [
  * // config.accent === 'text-rose-400'
  */
 export function getRoleConfig(role: string): RoleConfig {
-  return ROLES.find(r => r.id === role) ?? ROLES[0];
+  return ROLES.find(r => r.id === role) ?? ROLES[0]!;
 }
 
 // ── Navigation (All features enabled for Hackathon Demo) ──

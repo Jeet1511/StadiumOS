@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === "development"
 
-  const plugins: Plugin[] = [
+  const plugins: (Plugin | Plugin[])[] = [
     react(),
     tailwindcss(),
     figmaSiteConfiguration(siteConfiguration),
@@ -38,8 +38,18 @@ export default defineConfig(({ mode }) => {
     build: {
       sourcemap: emitSourcemaps ? "inline" : false,
       minify: !emitSourcemaps,
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'vendor-react';
+            if (id.includes('node_modules/framer-motion')) return 'vendor-motion';
+            if (id.includes('node_modules/@google/generative-ai')) return 'vendor-ai';
+            if (id.includes('node_modules/lucide-react')) return 'vendor-icons';
+          },
+        },
+      },
     },
-    plugins,
+    plugins: plugins.flat() as Plugin[],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

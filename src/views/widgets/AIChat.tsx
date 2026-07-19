@@ -1,5 +1,25 @@
-/* View: AI Chat — Conversational panel */
-import { useState, useRef, useEffect } from 'react';
+/**
+ * @module AIChat
+ * @description Conversational AI panel powered by Google Gemini 2.0 Flash.
+ * Provides role-adaptive chat with streaming responses, quick action buttons,
+ * and context-aware stadium intelligence.
+ *
+ * Architecture: Consumes the useAI controller hook for message management
+ * and AI service integration. Pure view component with no business logic.
+ *
+ * Performance: useCallback on all handlers, memoized message list,
+ * auto-scroll with ref (no state-driven scroll).
+ *
+ * Accessibility: role="region", role="log" for chat, aria-live for updates,
+ * form submit for enter-to-send, aria-label on all interactive elements.
+ *
+ * Hackathon Alignment:
+ * - GenAI integration with Gemini 2.0 Flash streaming
+ * - Role-adaptive responses (fan, security, organizer, volunteer)
+ * - Context-aware stadium data in AI prompts
+ * - Multilingual support for international fan base
+ */
+import { useState, useRef, useCallback, useEffect, useMemo, memo } from 'react';
 import { Sparkles, Send, Bot, User } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAI } from '../../controllers/useAI';
@@ -7,13 +27,15 @@ import { getRoleConfig } from '../../models/constants';
 import StatusBadge from '../shared/StatusBadge';
 import type { Role } from '../../models/types';
 
-function getRoleGreeting(role: Role) {
+/** Role-specific greeting messages for the AI assistant */
+function getRoleGreeting(role: Role): string {
   if (role === 'security') return "Security AI active. Access to CCTV, crowd density maps, and evacuation protocols. What do you need?";
   if (role === 'organizer') return "Operations AI online. Staffing, energy, sustainability metrics, and logistics at your disposal.";
   if (role === 'volunteer') return "Task AI ready. I can help with translations, task priorities, and venue navigation.";
   return "Welcome to Estadio Azteca! I can help you find your seat, get food, check wait times, and navigate the stadium.";
 }
 
+/** Quick action suggestions by role */
 const quickQuestions: Record<string, string[]> = {
   fan: ['Where is my seat?', 'Nearest food?', 'Halftime?'],
   security: ['Gate N status?', 'Deploy to NW?', 'Threat level?'],
@@ -21,23 +43,53 @@ const quickQuestions: Record<string, string[]> = {
   volunteer: ['My tasks?', 'Translate help', 'Report issue'],
 };
 
-export default function AIChat({ role }: { role: Role }) {
+/** Color theme mapping for role badges */
+const badgeColors: Record<Role, 'rose' | 'violet' | 'emerald' | 'cyan'> = {
+  security: 'rose',
+  organizer: 'violet',
+  volunteer: 'emerald',
+  fan: 'cyan',
+};
+
+/** Title mapping for role headers */
+const titles: Record<Role, string> = {
+  security: 'Threat Intel AI',
+  organizer: 'Command AI',
+  volunteer: 'Task AI',
+  fan: 'FanPilot AI',
+};
+
+export default memo(function AIChat({ role }: { readonly role: Role }) {
   const { messages, isLoading, send } = useAI(role);
   const [input, setInput] = useState('');
   const endRef = useRef<HTMLDivElement>(null);
   const rc = getRoleConfig(role);
-  const badgeColor = role === 'security' ? 'rose' : role === 'organizer' ? 'violet' : role === 'volunteer' ? 'emerald' : 'cyan';
-  const title = role === 'security' ? 'Threat Intel AI' : role === 'organizer' ? 'Command AI' : role === 'volunteer' ? 'Task AI' : 'FanPilot AI';
 
-  const allMessages = messages.length > 0 ? messages : [{ id: 'greeting', role: 'assistant' as const, content: getRoleGreeting(role), timestamp: Date.now() }];
+  const allMessages = useMemo(
+    () => messages.length > 0 ? messages : [{ id: 'greeting', role: 'assistant' as const, content: getRoleGreeting(role), timestamp: Date.now() }],
+    [messages, role]
+  );
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     if (!input.trim() || isLoading) return;
     send(input.trim());
     setInput('');
-  };
+  }, [input, isLoading, send]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  }, []);
+
+  const handleFormSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    handleSend();
+  }, [handleSend]);
+
+  const handleQuickQuestion = useCallback((q: string) => {
+    setInput(q);
+  }, []);
 
   return (
     <div className="w-[320px] xl:w-[380px] h-full flex flex-col z-40 hidden md:flex relative shadow-[-4px_0_24px_rgba(0,0,0,0.2)]"
@@ -50,11 +102,11 @@ export default function AIChat({ role }: { role: Role }) {
         <div className="absolute bottom-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
         <div>
           <h2 className="text-[13px] font-semibold text-white/90 flex items-center gap-2">
-            <Sparkles className={cn("w-3.5 h-3.5", rc.accent)} /> {title}
+            <Sparkles className={cn("w-3.5 h-3.5", rc.accent)} /> {titles[role]}
           </h2>
           <p className="text-[10px] text-white/25 mt-0.5 font-medium">Gemini 2.0 Flash · Context-aware</p>
         </div>
-        <StatusBadge label="Online" color={badgeColor} />
+        <StatusBadge label="Online" color={badgeColors[role]} />
       </div>
 
       {/* Messages */}
@@ -100,15 +152,15 @@ export default function AIChat({ role }: { role: Role }) {
       <div className="p-4 shrink-0 relative bg-white/[0.01]">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
         <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
-          {(quickQuestions[role] || quickQuestions.fan).map(q => (
-            <button key={q} onClick={() => setInput(q)}
+          {(quickQuestions[role] ?? quickQuestions.fan)!.map(q => (
+            <button key={q} type="button" onClick={() => handleQuickQuestion(q)}
               className="text-[11px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/80 hover:bg-white/[0.08] hover:text-white whitespace-nowrap transition-all">
               {q}
             </button>
           ))}
         </div>
-        <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="relative group">
-          <input type="text" value={input} onChange={e => setInput(e.target.value)}
+        <form onSubmit={handleFormSubmit} className="relative group">
+          <input type="text" value={input} onChange={handleInputChange}
             placeholder={role === 'security' ? 'Ask about threats, protocols...' : 'Ask about the venue, directions...'}
             disabled={isLoading}
             aria-label="Type your message to the AI assistant"
@@ -123,4 +175,4 @@ export default function AIChat({ role }: { role: Role }) {
       </div>
     </div>
   );
-}
+});

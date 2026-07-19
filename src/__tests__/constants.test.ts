@@ -47,7 +47,7 @@ describe('getNavItems()', () => {
   it('returns navigation items for fan role', () => {
     const items = getNavItems('fan');
     expect(items.length).toBeGreaterThan(0);
-    expect(items[0].id).toBe('home');
+    expect(items[0]!.id).toBe('home');
   });
 
   it('every nav item has id, icon, and label', () => {

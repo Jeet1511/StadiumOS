@@ -19,8 +19,8 @@ import type { CrowdZone, TransportStatus, SustainabilityMetric, VolunteerTask } 
 
 // ── Constants ──────────────────────────────────────────
 
-/** Density threshold percentages for crowd classification */
-const DENSITY_THRESHOLDS = {
+/** @internal Density threshold percentages for crowd classification */
+export const DENSITY_THRESHOLDS = {
   CRITICAL: 85,
   HIGH: 65,
   MODERATE: 40,

@@ -30,6 +30,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             <h1 className="text-2xl font-bold mb-2">StadiumOS</h1>
             <p className="text-white/60 text-sm mb-4">Something went wrong. Please refresh the page.</p>
             <button
+              type="button"
               onClick={() => window.location.reload()}
               className="px-6 py-2 bg-cyan-500/20 border border-cyan-500/30 rounded-xl text-cyan-300 text-sm font-semibold hover:bg-cyan-500/30 transition-all"
               aria-label="Reload application"
