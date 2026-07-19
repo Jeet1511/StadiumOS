@@ -218,8 +218,6 @@ export interface AppStateReturn {
   readonly navigate: (id: string) => void;
   readonly toggleLayer: (l: Layer) => void;
   readonly switchRole: () => void;
-  readonly setCommandPaletteOpen: (open: boolean) => void;
-  readonly setProfileOpen: (open: boolean) => void;
   /** Stable callback: opens profile modal without creating new function ref */
   readonly openProfile: () => void;
   /** Stable callback: closes profile modal without creating new function ref */
@@ -240,13 +238,13 @@ export interface AIStateReturn {
 
 /** Return type for the useLiveData controller hook. */
 export interface LiveDataReturn {
-  crowdZones: CrowdZone[];
-  transport: TransportStatus[];
-  sustainability: SustainabilityMetric[];
-  queueTimes: Record<string, number>;
-  totalAttendance: number;
-  avgDensity: number;
-  criticalZones: CrowdZone[];
+  readonly crowdZones: CrowdZone[];
+  readonly transport: TransportStatus[];
+  readonly sustainability: SustainabilityMetric[];
+  readonly queueTimes: Record<string, number>;
+  readonly totalAttendance: number;
+  readonly avgDensity: number;
+  readonly criticalZones: CrowdZone[];
 }
 
 /** Return type for the useMatchClock controller hook. */

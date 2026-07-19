@@ -125,7 +125,6 @@ export function useAppState(): AppStateReturn {
     view, role, activeNav, globalMode, activeLayers,
     commandPaletteOpen, profileOpen,
     selectRole, navigate, toggleLayer, switchRole,
-    setCommandPaletteOpen, setProfileOpen,
     openProfile, closeProfile, openCommandPalette, closeCommandPalette,
   }), [view, role, activeNav, globalMode, activeLayers, commandPaletteOpen, profileOpen, selectRole, navigate, toggleLayer, switchRole, openProfile, closeProfile, openCommandPalette, closeCommandPalette]);
 }

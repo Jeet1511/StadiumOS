@@ -28,7 +28,7 @@
  * - Command palette (Ctrl+K) for rapid access
  */
 import { AnimatePresence } from 'framer-motion';
-import React, { lazy, Suspense, useCallback } from 'react';
+import React, { lazy, Suspense, useCallback, memo } from 'react';
 import { useAppState } from './controllers/useAppState';
 import { LiveDataProvider } from './controllers/LiveDataContext';
 import { LAYERS } from './models/constants';
@@ -119,7 +119,7 @@ export default function App(): React.JSX.Element {
  * Layer toggle bar extracted as a separate memoizable component.
  * Prevents the entire App from re-rendering when layers change.
  */
-function LayerToggles({ activeLayers, toggleLayer }: {
+const LayerToggles = memo(function LayerToggles({ activeLayers, toggleLayer }: {
   readonly activeLayers: Set<Layer>;
   readonly toggleLayer: (l: Layer) => void;
 }): React.JSX.Element {
@@ -154,4 +154,4 @@ function LayerToggles({ activeLayers, toggleLayer }: {
       })}
     </div>
   );
-}
+});
